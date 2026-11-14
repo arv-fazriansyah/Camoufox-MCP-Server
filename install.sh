@@ -49,12 +49,17 @@ echo "[*] Installing Node dependencies..."
 cd "$INSTALL_DIR"
 npm install --omit=dev --prefer-offline > /dev/null 2>&1 || npm install --omit=dev
 
-# Automatically register MCP server in opencode.json using correct OpenCode format
+# Automatically register MCP server in opencode.json using environment variables
 echo "[*] Registering Camoufox MCP Server in OpenCode config..."
+export OPENCODE_CONFIG_PATH="$OPENCODE_CONFIG"
+export CAMOUFOX_SERVER_PATH="$INSTALL_DIR/index.js"
+export CAMOUFOX_NODE_PATH="$(command -v node || echo node)"
+
 node -e "
 const fs = require('fs');
-const configPath = process.argv[2];
-const serverPath = process.argv[3];
+const configPath = process.env.OPENCODE_CONFIG_PATH;
+const serverPath = process.env.CAMOUFOX_SERVER_PATH;
+const nodePath = process.env.CAMOUFOX_NODE_PATH;
 
 let config = {};
 try {
@@ -77,7 +82,7 @@ config.mcp.servers['camoufox-mcp'] = {
 };
 
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-" "$OPENCODE_CONFIG" "$INSTALL_DIR/index.js"
+"
 
 echo "[SUCCESS] Camoufox MCP Server installed and registered successfully!"
 echo "[READY] Restart OpenCode to apply changes."

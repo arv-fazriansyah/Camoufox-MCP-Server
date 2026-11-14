@@ -62,7 +62,7 @@ Write-Host "[*] Installing Node dependencies..." -ForegroundColor Yellow
 Set-Location $InstallDir
 npm install --omit=dev --cache (Join-Path $env:TEMP "npm-cache") --prefer-offline | Out-Null
 
-# Automatically register MCP server in opencode.json using correct OpenCode format
+# Automatically register MCP server in opencode.json using Node.js
 Write-Host "[*] Registering Camoufox MCP Server in OpenCode config..." -ForegroundColor Yellow
 if (!(Test-Path $ConfigDir)) {
     New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
@@ -72,11 +72,16 @@ $ServerPath = Join-Path $InstallDir "index.js"
 $NodePath = (Get-Command node -ErrorAction SilentlyContinue).Source
 if (!$NodePath) { $NodePath = "node" }
 
+# Use environment variables to pass paths to Node script (avoids argv indexing issues)
+$env:OPENCODE_CONFIG_PATH = $OpenCodeConfig
+$env:CAMOUFOX_SERVER_PATH = $ServerPath
+$env:CAMOUFOX_NODE_PATH = $NodePath
+
 $NodeScript = @"
 const fs = require('fs');
-const configPath = process.argv[2];
-const serverPath = process.argv[3];
-const nodePath = process.argv[4];
+const configPath = process.env.OPENCODE_CONFIG_PATH;
+const serverPath = process.env.CAMOUFOX_SERVER_PATH;
+const nodePath = process.env.CAMOUFOX_NODE_PATH;
 
 let config = {};
 try {
@@ -103,8 +108,13 @@ fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
 $TempNodeScript = Join-Path $env:TEMP "register_mcp.js"
 [System.IO.File]::WriteAllText($TempNodeScript, $NodeScript, $Utf8NoBomEncoding)
-node $TempNodeScript $OpenCodeConfig $ServerPath $NodePath
+node $TempNodeScript
 Remove-Item $TempNodeScript -Force -ErrorAction SilentlyContinue
+
+# Clean up environment variables
+Remove-Item Env:\OPENCODE_CONFIG_PATH -ErrorAction SilentlyContinue
+Remove-Item Env:\CAMOUFOX_SERVER_PATH -ErrorAction SilentlyContinue
+Remove-Item Env:\CAMOUFOX_NODE_PATH -ErrorAction SilentlyContinue
 
 Write-Host "[SUCCESS] Camoufox MCP Server installed successfully!" -ForegroundColor Green
 Write-Host "[READY] MCP Server registered in OpenCode. Restart OpenCode to apply changes." -ForegroundColor Cyan
