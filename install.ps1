@@ -32,12 +32,19 @@ if (!$SourceDir -or !(Test-Path (Join-Path $SourceDir "index.js"))) {
     }
     Write-Host "[*] Downloading repository files from GitHub..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Force -Path $TempRepoDir | Out-Null
-    Invoke-WebRequest -Uri "https://github.com/arv-fazriansyah/Camoufox-MCP-Server/archive/refs/heads/main.zip" -OutFile (Join-Path $TempRepoDir "main.zip")
-    Expand-Archive -Path (Join-Path $TempRepoDir "main.zip") -DestinationPath $TempRepoDir -Force
+    
+    $ZipPath = Join-Path $TempRepoDir "main.zip"
+    Invoke-WebRequest -Uri "https://github.com/arv-fazriansyah/Camoufox-MCP-Server/archive/refs/heads/main.zip" -OutFile $ZipPath
+    Expand-Archive -Path $ZipPath -DestinationPath $TempRepoDir -Force
+    
     $SourceDir = Join-Path $TempRepoDir "Camoufox-MCP-Server-main\camoufox-mcp-server"
 }
 
-Write-Host "[*] Copying server files from $SourceDir..." -ForegroundColor Yellow
+if (!(Test-Path (Join-Path $SourceDir "index.js"))) {
+    throw "Could not find index.js in source directory: $SourceDir"
+}
+
+Write-Host "[*] Copying server files..." -ForegroundColor Yellow
 Copy-Item (Join-Path $SourceDir "index.js") (Join-Path $InstallDir "index.js") -Force
 Copy-Item (Join-Path $SourceDir "package.json") (Join-Path $InstallDir "package.json") -Force
 
