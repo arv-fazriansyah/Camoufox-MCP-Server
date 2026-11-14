@@ -37,14 +37,14 @@ if (!$SourceDir -or !(Test-Path (Join-Path $SourceDir "index.js"))) {
     Invoke-WebRequest -Uri "https://github.com/arv-fazriansyah/Camoufox-MCP-Server/archive/refs/heads/main.zip" -OutFile $ZipPath
     Expand-Archive -Path $ZipPath -DestinationPath $TempRepoDir -Force
     
-    $SourceDir = Join-Path $TempRepoDir "Camoufox-MCP-Server-main\camoufox-mcp-server"
+    $SourceDir = Join-Path $TempRepoDir "Camoufox-MCP-Server-main"
 }
 
 if (!(Test-Path (Join-Path $SourceDir "index.js"))) {
     throw "Could not find index.js in source directory: $SourceDir"
 }
 
-Write-Host "[*] Copying server files..." -ForegroundColor Yellow
+Write-Host "[*] Copying server files from $SourceDir..." -ForegroundColor Yellow
 Copy-Item (Join-Path $SourceDir "index.js") (Join-Path $InstallDir "index.js") -Force
 Copy-Item (Join-Path $SourceDir "package.json") (Join-Path $InstallDir "package.json") -Force
 
