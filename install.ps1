@@ -74,9 +74,9 @@ if (!$NodePath) { $NodePath = "node" }
 
 $NodeScript = @"
 const fs = require('fs');
-const configPath = process.argv[1];
-const serverPath = process.argv[2];
-const nodePath = process.argv[3];
+const configPath = process.argv[2];
+const serverPath = process.argv[3];
+const nodePath = process.argv[4];
 
 let config = {};
 try {

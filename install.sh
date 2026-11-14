@@ -53,9 +53,8 @@ npm install --omit=dev --prefer-offline > /dev/null 2>&1 || npm install --omit=d
 echo "[*] Registering Camoufox MCP Server in OpenCode config..."
 node -e "
 const fs = require('fs');
-const path = require('path');
-const configPath = process.argv[1];
-const serverPath = process.argv[2];
+const configPath = process.argv[2];
+const serverPath = process.argv[3];
 
 let config = {};
 try {
