@@ -44,19 +44,33 @@ curl -sSL https://raw.githubusercontent.com/arv-fazriansyah/Camoufox-MCP-Server/
 
 To connect the Camoufox MCP Server to your AI Agent or MCP client (such as OpenCode or Claude Desktop), add the following entry to your MCP configuration file:
 
+### Windows (PowerShell / Command Prompt)
 ```json
 {
   "mcpServers": {
     "camoufox-mcp": {
       "command": "node",
       "args": [
-        "C:\\Users\\YOUR_USERNAME\\.config\\opencode\\mcp-servers\\camoufox-mcp\\index.js"
+        "C:/Users/%USERNAME%/.config/opencode/mcp-servers/camoufox-mcp/index.js"
       ]
     }
   }
 }
 ```
-*(Replace the path with your actual installation directory).*
+
+### macOS / Linux / Unix
+```json
+{
+  "mcpServers": {
+    "camoufox-mcp": {
+      "command": "node",
+      "args": [
+        "~/.config/opencode/mcp-servers/camoufox-mcp/index.js"
+      ]
+    }
+  }
+}
+```
 
 ---
 
