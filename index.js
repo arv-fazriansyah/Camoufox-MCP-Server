@@ -9,10 +9,20 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
+// Read configuration set during installation
+let defaultHeadless = true;
+try {
+  const configPath = path.join(os.homedir(), ".config", "opencode", "mcp-servers", "camoufox-mcp", "config.json");
+  const configData = JSON.parse(await fs.readFile(configPath, "utf-8"));
+  if (configData.headless !== undefined) {
+    defaultHeadless = configData.headless;
+  }
+} catch {}
+
 const server = new Server(
   {
     name: "camoufox-mcp-server",
-    version: "2.0.0",
+    version: "2.1.0",
   },
   {
     capabilities: {
@@ -21,7 +31,6 @@ const server = new Server(
   }
 );
 
-// Active browser sessions storage
 const sessions = new Map();
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -29,12 +38,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "camoufox_navigate",
-        description: "Open a URL using Camoufox anti-detect browser and return page text, title, and session ID for further actions.",
+        description: "Open a URL using Camoufox anti-detect browser and return page text, title, and session ID.",
         inputSchema: {
           type: "object",
           properties: {
             url: { type: "string", description: "The URL to navigate to" },
-            headless: { type: "boolean", description: "Run headless (default: true)" },
+            headless: { type: "boolean", description: `Run headless (default based on install config: ${defaultHeadless})` },
             proxy: { type: "string", description: "Optional proxy server (e.g. http://ip:port or socks5://ip:port)" },
             screenshot: { type: "boolean", description: "Take a screenshot (default: false)" }
           },
@@ -110,7 +119,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     if (name === "camoufox_navigate") {
       const url = args.url;
-      const headless = args.headless !== false;
+      const headless = args.headless !== undefined ? args.headless : defaultHeadless;
       const proxy = args.proxy;
       const takeScreenshot = args.screenshot === true;
 
@@ -241,4 +250,4 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error("Powerful Camoufox MCP Server v2.0 running on stdio");
+console.error("Powerful Camoufox MCP Server v2.1 running on stdio");
