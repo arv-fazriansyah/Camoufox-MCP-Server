@@ -55,7 +55,8 @@ Copy-Item (Join-Path $SourceDir "package.json") (Join-Path $InstallDir "package.
 $Config = @{
     headless = $headless
 } | ConvertTo-Json
-Set-Content -Path (Join-Path $InstallDir "config.json") -Value $Config
+$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText((Join-Path $InstallDir "config.json"), $Config, $Utf8NoBomEncoding)
 
 Write-Host "[*] Installing Node dependencies..." -ForegroundColor Yellow
 Set-Location $InstallDir
@@ -73,7 +74,8 @@ if (!$NodePath) { $NodePath = "node" }
 
 $OpenCodeConfigObj = @{}
 if (Test-Path $OpenCodeConfig) {
-    $RawJson = Get-Content $OpenCodeConfig -Raw
+    # Read text without BOM
+    $RawJson = [System.IO.File]::ReadAllText($OpenCodeConfig, (New-Object System.Text.UTF8Encoding $false))
     if ($RawJson) {
         $OpenCodeConfigObj = $RawJson | ConvertFrom-Json
     }
@@ -88,7 +90,8 @@ $OpenCodeConfigObj.mcp."camoufox-mcp" = @{
     enabled = $true
 }
 
-$OpenCodeConfigObj | ConvertTo-Json -Depth 10 | Set-Content -Path $OpenCodeConfig -Encoding UTF8
+$JsonOutput = $OpenCodeConfigObj | ConvertTo-Json -Depth 10
+[System.IO.File]::WriteAllText($OpenCodeConfig, $JsonOutput, $Utf8NoBomEncoding)
 
 Write-Host "[SUCCESS] Camoufox MCP Server installed successfully!" -ForegroundColor Green
 Write-Host "[READY] MCP Server registered in OpenCode. Restart OpenCode to apply changes." -ForegroundColor Cyan

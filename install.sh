@@ -59,7 +59,10 @@ const serverPath = process.argv[2];
 
 let config = {};
 try {
-  config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  const raw = fs.readFileSync(configPath, 'utf8').replace(/^\uFEFF/, '');
+  if (raw.trim()) {
+    config = JSON.parse(raw);
+  }
 } catch (e) {}
 
 if (!config.mcp) {
