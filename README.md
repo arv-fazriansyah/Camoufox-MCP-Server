@@ -1,11 +1,17 @@
-# Camoufox MCP Server
+# Camoufox MCP Server (v2.0 - Powerful & Feature-Rich)
 
-> A Model Context Protocol (MCP) server for OpenCode powered by Camoufox anti-detect browser.
+> A Model Context Protocol (MCP) server for OpenCode powered by Camoufox anti-detect browser with interactive automation capabilities.
 
-## Features
-- **Anti-Detect Browsing**: Launch Camoufox headless browser to bypass anti-bot protections.
-- **MCP Integration**: Fully compatible with OpenCode and MCP clients via `stdio`.
-- **Plug & Play**: Automated installers for Windows PowerShell and Unix Bash.
+## ✨ Powerful Features
+- **Anti-Detect Browsing**: Bypass Cloudflare, Akamai, and advanced anti-bot protections seamlessly.
+- **Session Management**: Maintain state across multi-step interactions using session IDs.
+- **Interactive Automation**:
+  - `camoufox_navigate`: Open URL with optional proxy and headless configuration.
+  - `camoufox_click`: Click buttons or elements by CSS selector.
+  - `camoufox_type`: Fill input fields and forms.
+  - `camoufox_eval`: Execute custom JavaScript in the page context.
+  - `camoufox_screenshot`: Capture full-page snapshots on demand.
+  - `camoufox_close`: Terminate active browser sessions cleanly.
 
 ---
 
@@ -19,20 +25,6 @@ iex (iwr -useb https://raw.githubusercontent.com/arv-fazriansyah/Camoufox-MCP-Se
 ### Linux / macOS (Bash)
 ```bash
 curl -fsSL https://raw.githubusercontent.com/arv-fazriansyah/Camoufox-MCP-Server/main/install.sh | bash
-```
-
----
-
-## 🗑️ Uninstall
-
-### Windows (PowerShell)
-```powershell
-iex (iwr -useb https://raw.githubusercontent.com/arv-fazriansyah/Camoufox-MCP-Server/main/uninstall.ps1).Content
-```
-
-### Linux / macOS (Bash)
-```bash
-curl -fsSL https://raw.githubusercontent.com/arv-fazriansyah/Camoufox-MCP-Server/main/uninstall.sh | bash
 ```
 
 ---
