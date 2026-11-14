@@ -16,6 +16,9 @@ if ($showBrowser -eq 'y' -or $showBrowser -eq 'Y') {
 }
 
 $InstallDir = Join-Path $env:USERPROFILE ".config\opencode\mcp-servers\camoufox-mcp"
+$ConfigDir = Join-Path $env:USERPROFILE ".config\opencode"
+$OpenCodeConfig = Join-Path $ConfigDir "opencode.json"
+
 Write-Host "[*] Target directory: $InstallDir" -ForegroundColor Yellow
 
 if (!(Test-Path $InstallDir)) {
@@ -58,5 +61,34 @@ Write-Host "[*] Installing Node dependencies..." -ForegroundColor Yellow
 Set-Location $InstallDir
 npm install --production --cache (Join-Path $env:TEMP "npm-cache") --prefer-offline | Out-Null
 
+# Automatically register MCP server in opencode.json
+Write-Host "[*] Registering Camoufox MCP Server in OpenCode config..." -ForegroundColor Yellow
+if (!(Test-Path $ConfigDir)) {
+    New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
+}
+
+$ServerPath = Join-Path $InstallDir "index.js"
+$NodePath = (Get-Command node -ErrorAction SilentlyContinue).Source
+if (!$NodePath) { $NodePath = "node" }
+
+$OpenCodeConfigObj = @{}
+if (Test-Path $OpenCodeConfig) {
+    $RawJson = Get-Content $OpenCodeConfig -Raw
+    if ($RawJson) {
+        $OpenCodeConfigObj = $RawJson | ConvertFrom-Json
+    }
+}
+
+if (!$OpenCodeConfigObj.mcp) {
+    $OpenCodeConfigObj | Add-Member -NotePropertyName "mcp" -NotePropertyValue @{} -Force
+}
+
+$OpenCodeConfigObj.mcp."camoufox-mcp" = @{
+    command = @($NodePath, $ServerPath)
+    enabled = $true
+}
+
+$OpenCodeConfigObj | ConvertTo-Json -Depth 10 | Set-Content -Path $OpenCodeConfig -Encoding UTF8
+
 Write-Host "[SUCCESS] Camoufox MCP Server installed successfully!" -ForegroundColor Green
-Write-Host "[READY] Configure OpenCode to point to: node $InstallDir\index.js" -ForegroundColor Cyan
+Write-Host "[READY] MCP Server registered in OpenCode. Restart OpenCode to apply changes." -ForegroundColor Cyan

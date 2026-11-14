@@ -18,6 +18,7 @@ fi
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 INSTALL_DIR="$CONFIG_DIR/mcp-servers/camoufox-mcp"
+OPENCODE_CONFIG="$CONFIG_DIR/opencode.json"
 
 echo "[*] Target directory: $INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"
@@ -29,7 +30,7 @@ if [ -z "$SCRIPT_DIR" ] || [ ! -f "$SCRIPT_DIR/index.js" ]; then
     TEMP_DIR="$(mktemp -d)"
     curl -sL "https://github.com/arv-fazriansyah/Camoufox-MCP-Server/archive/refs/heads/main.zip" -o "$TEMP_DIR/main.zip"
     unzip -q "$TEMP_DIR/main.zip" -d "$TEMP_DIR"
-    SCRIPT_DIR="$TEMP_DIR/Camoufox-MCP-Server-main/camoufox-mcp-server"
+    SCRIPT_DIR="$TEMP_DIR/Camoufox-MCP-Server-main"
 fi
 
 if [ ! -f "$SCRIPT_DIR/index.js" ]; then
@@ -48,5 +49,30 @@ echo "[*] Installing Node dependencies..."
 cd "$INSTALL_DIR"
 npm install --production --prefer-offline > /dev/null 2>&1 || npm install --production
 
-echo "[SUCCESS] Camoufox MCP Server installed successfully!"
-echo "[READY] Configure OpenCode to point to: node $INSTALL_DIR/index.js"
+# Automatically register MCP server in opencode.json using node script
+echo "[*] Registering Camoufox MCP Server in OpenCode config..."
+node -e "
+const fs = require('fs');
+const path = require('path');
+const configPath = process.argv[1];
+const serverPath = process.argv[2];
+
+let config = {};
+try {
+  config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+} catch (e) {}
+
+if (!config.mcp) {
+  config.mcp = {};
+}
+
+config.mcp['camoufox-mcp'] = {
+  command: ['node', serverPath],
+  enabled: true
+};
+
+fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+" "$OPENCODE_CONFIG" "$INSTALL_DIR/index.js"
+
+echo "[SUCCESS] Camoufox MCP Server installed and registered successfully!"
+echo "[READY] Restart OpenCode to apply changes."
