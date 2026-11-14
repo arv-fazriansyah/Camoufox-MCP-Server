@@ -49,7 +49,7 @@ echo "[*] Installing Node dependencies..."
 cd "$INSTALL_DIR"
 npm install --omit=dev --prefer-offline > /dev/null 2>&1 || npm install --omit=dev
 
-# Automatically register MCP server in opencode.json using node script
+# Automatically register MCP server in opencode.json using correct OpenCode format
 echo "[*] Registering Camoufox MCP Server in OpenCode config..."
 node -e "
 const fs = require('fs');
@@ -68,10 +68,13 @@ try {
 if (!config.mcp) {
   config.mcp = {};
 }
+if (!config.mcp.servers) {
+  config.mcp.servers = {};
+}
 
-config.mcp['camoufox-mcp'] = {
-  command: ['node', serverPath],
-  enabled: true
+config.mcp.servers['camoufox-mcp'] = {
+  type: 'local',
+  command: ['node', serverPath]
 };
 
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));

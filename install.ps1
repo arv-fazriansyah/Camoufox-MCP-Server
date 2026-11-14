@@ -62,7 +62,7 @@ Write-Host "[*] Installing Node dependencies..." -ForegroundColor Yellow
 Set-Location $InstallDir
 npm install --omit=dev --cache (Join-Path $env:TEMP "npm-cache") --prefer-offline | Out-Null
 
-# Automatically register MCP server in opencode.json using Node.js for clean JSON formatting
+# Automatically register MCP server in opencode.json using correct OpenCode format
 Write-Host "[*] Registering Camoufox MCP Server in OpenCode config..." -ForegroundColor Yellow
 if (!(Test-Path $ConfigDir)) {
     New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
@@ -89,10 +89,13 @@ try {
 if (!config.mcp) {
   config.mcp = {};
 }
+if (!config.mcp.servers) {
+  config.mcp.servers = {};
+}
 
-config.mcp['camoufox-mcp'] = {
-  command: [nodePath, serverPath],
-  enabled: true
+config.mcp.servers['camoufox-mcp'] = {
+  type: 'local',
+  command: [nodePath, serverPath]
 };
 
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
