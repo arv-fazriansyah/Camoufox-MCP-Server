@@ -62,7 +62,7 @@ Write-Host "[*] Installing Node dependencies..." -ForegroundColor Yellow
 Set-Location $InstallDir
 npm install --production --cache (Join-Path $env:TEMP "npm-cache") --prefer-offline | Out-Null
 
-# Automatically register MCP server in opencode.json
+# Automatically register MCP server in opencode.json using Node.js for clean JSON formatting
 Write-Host "[*] Registering Camoufox MCP Server in OpenCode config..." -ForegroundColor Yellow
 if (!(Test-Path $ConfigDir)) {
     New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
@@ -72,26 +72,36 @@ $ServerPath = Join-Path $InstallDir "index.js"
 $NodePath = (Get-Command node -ErrorAction SilentlyContinue).Source
 if (!$NodePath) { $NodePath = "node" }
 
-$OpenCodeConfigObj = @{}
-if (Test-Path $OpenCodeConfig) {
-    # Read text without BOM
-    $RawJson = [System.IO.File]::ReadAllText($OpenCodeConfig, (New-Object System.Text.UTF8Encoding $false))
-    if ($RawJson) {
-        $OpenCodeConfigObj = $RawJson | ConvertFrom-Json
-    }
+$NodeScript = @"
+const fs = require('fs');
+const configPath = process.argv[1];
+const serverPath = process.argv[2];
+const nodePath = process.argv[3];
+
+let config = {};
+try {
+  const raw = fs.readFileSync(configPath, 'utf8').replace(/^\uFEFF/, '');
+  if (raw.trim()) {
+    config = JSON.parse(raw);
+  }
+} catch (e) {}
+
+if (!config.mcp) {
+  config.mcp = {};
 }
 
-if (!$OpenCodeConfigObj.mcp) {
-    $OpenCodeConfigObj | Add-Member -NotePropertyName "mcp" -NotePropertyValue @{} -Force
-}
+config.mcp['camoufox-mcp'] = {
+  command: [nodePath, serverPath],
+  enabled: true
+};
 
-$OpenCodeConfigObj.mcp."camoufox-mcp" = @{
-    command = @($NodePath, $ServerPath)
-    enabled = $true
-}
+fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+"@
 
-$JsonOutput = $OpenCodeConfigObj | ConvertTo-Json -Depth 10
-[System.IO.File]::WriteAllText($OpenCodeConfig, $JsonOutput, $Utf8NoBomEncoding)
+$TempNodeScript = Join-Path $env:TEMP "register_mcp.js"
+[System.IO.File]::WriteAllText($TempNodeScript, $NodeScript, $Utf8NoBomEncoding)
+node $TempNodeScript $OpenCodeConfig $ServerPath $NodePath
+Remove-Item $TempNodeScript -Force -ErrorAction SilentlyContinue
 
 Write-Host "[SUCCESS] Camoufox MCP Server installed successfully!" -ForegroundColor Green
 Write-Host "[READY] MCP Server registered in OpenCode. Restart OpenCode to apply changes." -ForegroundColor Cyan
