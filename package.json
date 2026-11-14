@@ -10,6 +10,8 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "latest",
     "camoufox": "latest",
+    "impit": "^0.14.9",
+    "impit-win32-x64-msvc": "^0.14.9",
     "playwright-core": "latest"
   }
 }
