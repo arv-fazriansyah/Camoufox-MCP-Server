@@ -212,7 +212,31 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const session = sessions.get(sessionId);
       if (!session) throw new Error(`Session ${sessionId} not found.`);
 
-      const result = await session.page.evaluate(script);
+      // Build executable code: ensure there's a return statement
+      let code = script.trim();
+      if (!/\breturn\b/.test(code)) {
+        code = `return (${code})`;
+      }
+
+      // Strategy 1: Use new Function() to create a real function object
+      // (Playwright serializes function objects, not string bodies)
+      let result;
+      try {
+        const fn = new Function(code);
+        result = await session.page.evaluate(fn);
+      } catch (e1) {
+        // Strategy 2: Fallback to string-based evaluation with IIFE wrapper
+        try {
+          result = await session.page.evaluate(`(function() { ${code} })()`);
+        } catch (e2) {
+          // Strategy 3: Fallback to arrow function body wrapper
+          try {
+            result = await session.page.evaluate(`() => { ${code} }`);
+          } catch (e3) {
+            throw new Error(`Script evaluation failed: ${e1.message}`);
+          }
+        }
+      }
 
       return {
         content: [{ type: "text", text: JSON.stringify({ success: true, result }, null, 2) }]
