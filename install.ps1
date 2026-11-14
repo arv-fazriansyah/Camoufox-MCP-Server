@@ -23,13 +23,21 @@ if (!(Test-Path $InstallDir)) {
     Write-Host "[+] Created installation directory." -ForegroundColor Green
 }
 
-# Copy files
+# Determine source directory correctly when running via `irm ... | iex`
 $SourceDir = $PSScriptRoot
-if (!$SourceDir) {
-    $SourceDir = Get-Location
+if (!$SourceDir -or !(Test-Path (Join-Path $SourceDir "index.js"))) {
+    $TempRepoDir = Join-Path $env:TEMP "camoufox-mcp-repo"
+    if (Test-Path $TempRepoDir) {
+        Remove-Item -Recurse -Force $TempRepoDir -ErrorAction SilentlyContinue
+    }
+    Write-Host "[*] Downloading repository files from GitHub..." -ForegroundColor Yellow
+    New-Item -ItemType Directory -Force -Path $TempRepoDir | Out-Null
+    Invoke-WebRequest -Uri "https://github.com/arv-fazriansyah/Camoufox-MCP-Server/archive/refs/heads/main.zip" -OutFile (Join-Path $TempRepoDir "main.zip")
+    Expand-Archive -Path (Join-Path $TempRepoDir "main.zip") -DestinationPath $TempRepoDir -Force
+    $SourceDir = Join-Path $TempRepoDir "Camoufox-MCP-Server-main\camoufox-mcp-server"
 }
 
-Write-Host "[*] Copying server files..." -ForegroundColor Yellow
+Write-Host "[*] Copying server files from $SourceDir..." -ForegroundColor Yellow
 Copy-Item (Join-Path $SourceDir "index.js") (Join-Path $InstallDir "index.js") -Force
 Copy-Item (Join-Path $SourceDir "package.json") (Join-Path $InstallDir "package.json") -Force
 
