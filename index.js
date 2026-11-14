@@ -42,74 +42,74 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            url: { type: \"string\", description: \"The URL to navigate to\" },
-            headless: { type: \"boolean\", description: `Run headless (default based on install config: ${defaultHeadless})` },
-            proxy: { type: \"string\", description: \"Optional proxy server (e.g. http://ip:port or socks5://ip:port)\" },
-            geoip: { type: \"boolean\", description: \"Match timezone, locale, geolocation and WebRTC IP with the proxy exit IP (default: true if proxy is provided)\" },
-            canvas_noise: { type: \"boolean\", description: \"Enable canvas noise / random readback if running on a different OS identity (default: true)\" },
-            os: { type: \"string\", description: \"Target OS fingerprint to spoof (e.g. 'windows', 'macos', 'linux' - optional)\" },
-            screenshot: { type: \"boolean\", description: \"Take a screenshot upon navigation (default: false)\" }
+            url: { type: "string", description: "The URL to navigate to" },
+            headless: { type: "boolean", description: `Run headless (default based on install config: ${defaultHeadless})` },
+            proxy: { type: "string", description: "Optional proxy server (e.g. http://ip:port or socks5://ip:port)" },
+            geoip: { type: "boolean", description: "Match timezone, locale, geolocation and WebRTC IP with the proxy exit IP (default: true if proxy is provided)" },
+            canvas_noise: { type: "boolean", description: "Enable canvas noise / random readback if running on a different OS identity (default: true)" },
+            os: { type: "string", description: "Target OS fingerprint to spoof (e.g. 'windows', 'macos', 'linux' - optional)" },
+            screenshot: { type: "boolean", description: "Take a screenshot upon navigation (default: false)" }
           },
-          required: [\"url\"],
+          required: ["url"],
         },
       },
       {
-        name: \"camoufox_click\",
-        description: \"Click an element on the active page using a CSS selector with human-like interaction.\",
+        name: "camoufox_click",
+        description: "Click an element on the active page using a CSS selector with human-like interaction.",
         inputSchema: {
-          type: \"object\",
+          type: "object",
           properties: {
-            sessionId: { type: \"string\", description: \"Active session ID\" },
-            selector: { type: \"string\", description: \"CSS selector to click\" }
+            sessionId: { type: "string", description: "Active session ID" },
+            selector: { type: "string", description: "CSS selector to click" }
           },
-          required: [\"sessionId\", \"selector\"],
+          required: ["sessionId", "selector"],
         },
       },
       {
-        name: \"camoufox_type\",
-        description: \"Type text into an input element using a CSS selector naturally.\",
+        name: "camoufox_type",
+        description: "Type text into an input element using a CSS selector naturally.",
         inputSchema: {
-          type: \"object\",
+          type: "object",
           properties: {
-            sessionId: { type: \"string\", description: \"Active session ID\" },
-            selector: { type: \"string\", description: \"CSS selector of the input\" },
-            text: { type: \"string\", description: \"Text to type\" }
+            sessionId: { type: "string", description: "Active session ID" },
+            selector: { type: "string", description: "CSS selector of the input" },
+            text: { type: "string", description: "Text to type" }
           },
-          required: [\"sessionId\", \"selector\", \"text\"],
+          required: ["sessionId", "selector", "text"],
         },
       },
       {
-        name: \"camoufox_eval\",
-        description: \"Execute JavaScript code on the active page and return the result.\",
+        name: "camoufox_eval",
+        description: "Execute JavaScript code on the active page and return the result.",
         inputSchema: {
-          type: \"object\",
+          type: "object",
           properties: {
-            sessionId: { type: \"string\", description: \"Active session ID\" },
-            script: { type: \"string\", description: \"JavaScript code to execute\" }
+            sessionId: { type: "string", description: "Active session ID" },
+            script: { type: "string", description: "JavaScript code to execute" }
           },
-          required: [\"sessionId\", \"script\"],
+          required: ["sessionId", "script"],
         },
       },
       {
-        name: \"camoufox_screenshot\",
-        description: \"Take a screenshot of the active session page.\",
+        name: "camoufox_screenshot",
+        description: "Take a screenshot of the active session page.",
         inputSchema: {
-          type: \"object\",
+          type: "object",
           properties: {
-            sessionId: { type: \"string\", description: \"Active session ID\" }
+            sessionId: { type: "string", description: "Active session ID" }
           },
-          required: [\"sessionId\"],
+          required: ["sessionId"],
         },
       },
       {
-        name: \"camoufox_close\",
-        description: \"Close an active browser session and release resources.\",
+        name: "camoufox_close",
+        description: "Close an active browser session and release resources.",
         inputSchema: {
-          type: \"object\",
+          type: "object",
           properties: {
-            sessionId: { type: \"string\", description: \"Active session ID to close\" }
+            sessionId: { type: "string", description: "Active session ID to close" }
           },
-          required: [\"sessionId\"],
+          required: ["sessionId"],
         },
       }
     ],
@@ -120,7 +120,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
-    if (name === \"camoufox_navigate\") {
+    if (name === "camoufox_navigate") {
       const url = args.url;
       const headless = args.headless !== undefined ? args.headless : defaultHeadless;
       const proxy = args.proxy;
@@ -146,14 +146,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const browser = await Camoufox(launchOpts);
       const page = await browser.newPage();
       
-      await page.goto(url, { waitUntil: \"networkidle\", timeout: 45000 });
+      await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
       
       const title = await page.title();
       const content = await page.evaluate(() => document.body.innerText);
 
-      let screenshotPath = \"\";
+      let screenshotPath = "";
       if (takeScreenshot) {
-        const tempDir = path.join(os.tmpdir(), \"opencode\", \"camoufox\");
+        const tempDir = path.join(os.tmpdir(), "opencode", "camoufox");
         await fs.mkdir(tempDir, { recursive: true });
         screenshotPath = path.join(tempDir, `screenshot-${Date.now()}.png`);
         await page.screenshot({ path: screenshotPath, fullPage: true });
@@ -165,13 +165,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return {
         content: [
           {
-            type: \"text\",
+            type: "text",
             text: JSON.stringify({
               success: true,
               sessionId,
               url,
               title,
-              optionsApplied: { headless, geoip, canvas_noise, proxy: proxy || null, os: targetOs || \"auto\" },
+              optionsApplied: { headless, geoip, canvas_noise, proxy: proxy || null, os: targetOs || "auto" },
               content: content.slice(0, 15000),
               screenshot: screenshotPath || null
             }, null, 2),
@@ -180,22 +180,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     }
 
-    if (name === \"camoufox_click\") {
+    if (name === "camoufox_click") {
       const { sessionId, selector } = args;
       const session = sessions.get(sessionId);
       if (!session) throw new Error(`Session ${sessionId} not found.`);
 
       await session.page.click(selector, { timeout: 10000 });
-      await session.page.waitForLoadState(\"networkidle\", { timeout: 10000 }).catch(() => {});
+      await session.page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
 
       const content = await session.page.evaluate(() => document.body.innerText);
 
       return {
-        content: [{ type: \"text\", text: JSON.stringify({ success: true, message: `Clicked ${selector}`, content: content.slice(0, 10000) }, null, 2) }]
+        content: [{ type: "text", text: JSON.stringify({ success: true, message: `Clicked ${selector}`, content: content.slice(0, 10000) }, null, 2) }]
       };
     }
 
-    if (name === \"camoufox_type\") {
+    if (name === "camoufox_type") {
       const { sessionId, selector, text } = args;
       const session = sessions.get(sessionId);
       if (!session) throw new Error(`Session ${sessionId} not found.`);
@@ -203,11 +203,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       await session.page.fill(selector, text, { timeout: 10000 });
 
       return {
-        content: [{ type: \"text\", text: JSON.stringify({ success: true, message: `Typed into ${selector}` }, null, 2) }]
+        content: [{ type: "text", text: JSON.stringify({ success: true, message: `Typed into ${selector}` }, null, 2) }]
       };
     }
 
-    if (name === \"camoufox_eval\") {
+    if (name === "camoufox_eval") {
       const { sessionId, script } = args;
       const session = sessions.get(sessionId);
       if (!session) throw new Error(`Session ${sessionId} not found.`);
@@ -215,26 +215,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const result = await session.page.evaluate(script);
 
       return {
-        content: [{ type: \"text\", text: JSON.stringify({ success: true, result }, null, 2) }]
+        content: [{ type: "text", text: JSON.stringify({ success: true, result }, null, 2) }]
       };
     }
 
-    if (name === \"camoufox_screenshot\") {
+    if (name === "camoufox_screenshot") {
       const { sessionId } = args;
       const session = sessions.get(sessionId);
       if (!session) throw new Error(`Session ${sessionId} not found.`);
 
-      const tempDir = path.join(os.tmpdir(), \"opencode\", \"camoufox\");
+      const tempDir = path.join(os.tmpdir(), "opencode", "camoufox");
       await fs.mkdir(tempDir, { recursive: true });
       const screenshotPath = path.join(tempDir, `screenshot-${Date.now()}.png`);
       await session.page.screenshot({ path: screenshotPath, fullPage: true });
 
       return {
-        content: [{ type: \"text\", text: JSON.stringify({ success: true, screenshot: screenshotPath }, null, 2) }]
+        content: [{ type: "text", text: JSON.stringify({ success: true, screenshot: screenshotPath }, null, 2) }]
       };
     }
 
-    if (name === \"camoufox_close\") {
+    if (name === "camoufox_close") {
       const { sessionId } = args;
       const session = sessions.get(sessionId);
       if (session) {
@@ -243,7 +243,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       return {
-        content: [{ type: \"text\", text: JSON.stringify({ success: true, message: `Session ${sessionId} closed.` }, null, 2) }]
+        content: [{ type: "text", text: JSON.stringify({ success: true, message: `Session ${sessionId} closed.` }, null, 2) }]
       };
     }
 
@@ -252,7 +252,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return {
       content: [
         {
-          type: \"text\",
+          type: "text",
           text: JSON.stringify({
             success: false,
             error: error.message,
@@ -266,4 +266,4 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error(\"Advanced Camoufox MCP Server v2.2 running on stdio\");
+console.error("Advanced Camoufox MCP Server v2.2 running on stdio");
