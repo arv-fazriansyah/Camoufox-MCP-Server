@@ -60,7 +60,7 @@ $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $false
 
 Write-Host "[*] Installing Node dependencies..." -ForegroundColor Yellow
 Set-Location $InstallDir
-npm install --production --cache (Join-Path $env:TEMP "npm-cache") --prefer-offline | Out-Null
+npm install --omit=dev --cache (Join-Path $env:TEMP "npm-cache") --prefer-offline | Out-Null
 
 # Automatically register MCP server in opencode.json using Node.js for clean JSON formatting
 Write-Host "[*] Registering Camoufox MCP Server in OpenCode config..." -ForegroundColor Yellow

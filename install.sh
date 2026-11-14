@@ -47,7 +47,7 @@ echo "{\"headless\": $headless}" > "$INSTALL_DIR/config.json"
 
 echo "[*] Installing Node dependencies..."
 cd "$INSTALL_DIR"
-npm install --production --prefer-offline > /dev/null 2>&1 || npm install --production
+npm install --omit=dev --prefer-offline > /dev/null 2>&1 || npm install --omit=dev
 
 # Automatically register MCP server in opencode.json using node script
 echo "[*] Registering Camoufox MCP Server in OpenCode config..."
