@@ -1,0 +1,7 @@
+node_modules/
+output.txt
+test_*.js
+run.js
+err.txt
+*.log
+.DS_Store

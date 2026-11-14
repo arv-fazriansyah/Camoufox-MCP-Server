@@ -1,0 +1,15 @@
+{
+  "name": "camoufox-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for Camoufox anti-detect browser",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "camoufox": "latest",
+    "playwright-core": "latest"
+  }
+}
