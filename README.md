@@ -30,7 +30,7 @@ Run the automated installer in your PowerShell terminal:
 ```powershell
 irm https://raw.githubusercontent.com/arv-fazriansyah/Camoufox-MCP-Server/main/install.ps1 | iex
 ```
-*(During installation, you will be prompted: `Show the browser window on screen (Headed Mode)? [y/N]`)*
+*(During installation, you will be prompted: `Show the browser window on screen (Headed Mode)? [Y/N]`)*
 
 ### Unix / Linux / macOS (Bash)
 Run the automated installer in your terminal:

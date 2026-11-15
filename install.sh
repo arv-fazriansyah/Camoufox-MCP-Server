@@ -7,7 +7,7 @@ set -e
 echo "=== Camoufox MCP Server Installer ==="
 
 # Ask user if browser should be shown (Headed vs Headless)
-read -p "Show the browser window on screen (Headed Mode)? [y/N] " show_browser
+read -p "Show the browser window on screen (Headed Mode)? [Y/N] " show_browser
 headless=true
 if [[ "$show_browser" == "y" || "$show_browser" == "Y" ]]; then
     headless=false

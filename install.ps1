@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 Write-Host "=== Camoufox MCP Server Installer ===" -ForegroundColor Cyan
 
 # Ask user if browser should be shown (Headed vs Headless)
-$showBrowser = Read-Host "Show the browser window on screen (Headed Mode)? [y/N]"
+$showBrowser = Read-Host "Show the browser window on screen (Headed Mode)? [Y/N]"
 $headless = $true
 if ($showBrowser -eq 'y' -or $showBrowser -eq 'Y') {
     $headless = $false
