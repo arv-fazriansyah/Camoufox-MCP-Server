@@ -7,13 +7,13 @@ set -e
 echo "=== Camoufox MCP Server Installer ==="
 
 # Ask user if browser should be shown (Headed vs Headless)
-read -p "Apakah browser ingin ditampilkan di layar (Headed Mode)? [y/N] " show_browser
+read -p "Show the browser window on screen (Headed Mode)? [y/N] " show_browser
 headless=true
 if [[ "$show_browser" == "y" || "$show_browser" == "Y" ]]; then
     headless=false
-    echo "[*] Mode: Headed (Browser akan terbuka di layar)"
+    echo "[*] Mode: Headed (the browser window will be visible)"
 else
-    echo "[*] Mode: Headless (Berjalan di background)"
+    echo "[*] Mode: Headless (runs in the background)"
 fi
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"

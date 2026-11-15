@@ -6,13 +6,13 @@ $ErrorActionPreference = "Stop"
 Write-Host "=== Camoufox MCP Server Installer ===" -ForegroundColor Cyan
 
 # Ask user if browser should be shown (Headed vs Headless)
-$showBrowser = Read-Host "Apakah browser ingin ditampilkan di layar (Headed Mode)? [y/N]"
+$showBrowser = Read-Host "Show the browser window on screen (Headed Mode)? [y/N]"
 $headless = $true
 if ($showBrowser -eq 'y' -or $showBrowser -eq 'Y') {
     $headless = $false
-    Write-Host "[*] Mode: Headed (Browser akan terbuka di layar)" -ForegroundColor Green
+    Write-Host "[*] Mode: Headed (the browser window will be visible)" -ForegroundColor Green
 } else {
-    Write-Host "[*] Mode: Headless (Berjalan di background)" -ForegroundColor Yellow
+    Write-Host "[*] Mode: Headless (runs in the background)" -ForegroundColor Yellow
 }
 
 $InstallDir = Join-Path $env:USERPROFILE ".config\opencode\mcp-servers\camoufox-mcp"
