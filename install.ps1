@@ -98,7 +98,7 @@ if (!config.mcp.servers) {
   config.mcp.servers = {};
 }
 
-config.mcp.servers['camoufox-mcp'] = {
+config.mcp.servers['camoufox'] = {
   type: 'local',
   command: [nodePath, serverPath]
 };

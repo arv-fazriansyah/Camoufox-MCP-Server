@@ -48,7 +48,7 @@ To connect the Camoufox MCP Server to your AI Agent or MCP client (such as OpenC
 ```json
 {
   "mcpServers": {
-    "camoufox-mcp": {
+    "camoufox": {
       "command": "node",
       "args": [
         "C:/Users/%USERNAME%/.config/opencode/mcp-servers/camoufox-mcp/index.js"
@@ -62,7 +62,7 @@ To connect the Camoufox MCP Server to your AI Agent or MCP client (such as OpenC
 ```json
 {
   "mcpServers": {
-    "camoufox-mcp": {
+    "camoufox": {
       "command": "node",
       "args": [
         "~/.config/opencode/mcp-servers/camoufox-mcp/index.js"
